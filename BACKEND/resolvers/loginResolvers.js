@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt";
 import { client } from "../helpers/dbHelper.js";
+import generateToken from "../helpers/tokenHelper.js"; 
 
 export const loginResolver = {
   Mutation: {
     loginUser: async (_, { username, password }) => {
       try {
-        // First query to get the user with the provided username
+        // Query to get the user with the provided username
         const userQuery = {
           text: "SELECT * FROM users WHERE username = $1",
           values: [username],
@@ -17,9 +18,10 @@ export const loginResolver = {
         // If no user found with that username
         if (!user) {
           return {
-            content: [],
+            token: null,
+            user: null,
             type: "ERROR",
-            message: "Invalid username or password"
+            message: "Invalid username or password",
           };
         }
         
@@ -27,10 +29,16 @@ export const loginResolver = {
         const passwordMatch = await bcrypt.compare(password, user.password);
         
         if (passwordMatch) {
-          // Call the user_login function for consistency with your existing code
+          // Generate JWT token
+          const token = await generateToken({
+            username: user.username,
+            user_type: user.user_type, // Assuming user_type exists in your user table
+          });
+
+          // Call the user_login function for consistency (if still needed)
           const loginQuery = {
             text: "SELECT public.fn_user_login($1, $2) as response",
-            values: [username, user.password], // Using the actual stored password here
+            values: [username, user.password],
           };
           
           const result = await client.query(loginQuery);
@@ -38,32 +46,29 @@ export const loginResolver = {
           
           console.log("Login Result:", pgResponse);
           
-          let content = [];
-          if (pgResponse.content) {
-            // Wrap the user object in an array to match your response format
-            content = [pgResponse.content];
-          }
-          
           return {
-            content: content,
+            token, // Return the generated token
+            user: pgResponse.content || user, // Use the user from pgResponse or the queried user
             type: pgResponse.type.toUpperCase(),
-            message: pgResponse.message
+            message: pgResponse.message,
           };
         } else {
           return {
-            content: [],
+            token: null,
+            user: null,
             type: "ERROR",
-            message: "Invalid username or password"
+            message: "Invalid username or password",
           };
         }
       } catch (err) {
         console.error("Error:", err);
         return {
-          content: [],
+          token: null,
+          user: null,
           type: "ERROR",
-          message: "Failed to login: " + err.message
+          message: "Failed to login: " + err.message,
         };
       }
-    }
-  }
+    },
+  },
 };

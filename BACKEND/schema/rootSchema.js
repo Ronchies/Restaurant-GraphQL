@@ -20,7 +20,7 @@ export const rootSchema = `#graphql
     }
 
     type Mutation {
-        loginUser(username: String!, password: String!): MutationResponse
+        loginUser(username: String!, password: String!): LoginResponse
     
         addUser(user: AddUserInput!, admin_id: Int!): MutationResponse
         editUser(id: Int!, user: EditUserInput!, admin_id: Int!): MutationResponse
@@ -41,6 +41,13 @@ export const rootSchema = `#graphql
         addOrderItem(orderItem: AddOrderItemInput!, user_id: Int!): OrderItemMutationResponse
         editOrderItem(orderitem_id: Int!, orderItem: EditOrderItemInput!, user_id: Int!): OrderItemMutationResponse
         deleteOrderItem(orderitem_id: Int!, user_id: Int!): OrderItemMutationResponse
+    }
+
+    type LoginResponse {
+        token: String
+        user: User
+        type: String
+        message: String
     }
 
     type MutationResponse {
