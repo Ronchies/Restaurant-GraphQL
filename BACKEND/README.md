@@ -1,2 +1,2 @@
 # Restaurant-GraphQL
- 
+ * Finished Functions
