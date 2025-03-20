@@ -34,7 +34,16 @@ export const usersResolver = {
     },
 
     Mutation: {
-        addUser: async (_, { user, admin_id }) => {
+        addUser: async (_, { user, admin_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             try {
                 const hashedPassword = await bcrypt.hash(user.password, 10);
         
@@ -44,21 +53,18 @@ export const usersResolver = {
                 };
                 
                 const result = await client.query(query);
-                // Get the raw JSON response from PostgreSQL
                 const pgResponse = result.rows[0].result;
                 
                 console.log("Add User Result:", pgResponse);
                 
-                // Parse the content from PostgreSQL's response
                 let content = [];
                 if (pgResponse.content) {
-                    // Ensure content is an array even if it's a single object
                     content = [pgResponse.content];
                 }
                 
                 return {
                     content: content,
-                    type: pgResponse.type,
+                    type: pgResponse.type.toUpperCase(),
                     message: pgResponse.message
                 };
             } catch (err) {
@@ -67,7 +73,16 @@ export const usersResolver = {
             }
         },
 
-        editUser: async (_, { id, user, admin_id }) => {
+        editUser: async (_, { id, user, admin_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             try {
                 let hashedPassword = null;
                 
@@ -85,8 +100,6 @@ export const usersResolver = {
                 
                 console.log("Edit User Result:", pgResponse);
                 
-                // If the content is null, return an empty array for content
-                // Otherwise, wrap the single user object in an array to match MutationResponse type
                 let content = [];
                 if (pgResponse.content) {
                     content = [pgResponse.content];
@@ -103,7 +116,16 @@ export const usersResolver = {
             }
         },
 
-        deleteUser: async (_, { id, admin_id }) => {
+        deleteUser: async (_, { id, admin_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             try {
                 const query = {
                     text: "SELECT fn_delete_user($1, $2) as result",
@@ -115,8 +137,6 @@ export const usersResolver = {
                 
                 console.log("Delete User Result:", pgResponse);
                 
-                // If the content is null, return an empty array for content
-                // Otherwise, wrap the single user object in an array to match MutationResponse type
                 let content = [];
                 if (pgResponse.content) {
                     content = [pgResponse.content];
