@@ -52,7 +52,16 @@ export const orderitemsResolver = {
     },
 
     Mutation: {
-        addOrderItem: async (_, { orderItem, user_id }) => {
+        addOrderItem: async (_, { orderItem, user_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             console.log("Mutation: addOrderItem called with params:", { orderItem, user_id });
             try {
                 const query = {
@@ -66,8 +75,6 @@ export const orderitemsResolver = {
                     ],
                 };
                 const result = await client.query(query);
-
-                // Get the raw JSON response from PostgreSQL
                 const pgResponse = result.rows[0].result;
 
                 console.log("Add Order Item Result:", pgResponse);
@@ -83,7 +90,16 @@ export const orderitemsResolver = {
             }
         },
 
-        editOrderItem: async (_, { orderitem_id, orderItem, user_id }) => {
+        editOrderItem: async (_, { orderitem_id, orderItem, user_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             console.log("Mutation: editOrderItem called with params:", { orderitem_id, orderItem, user_id });
             try {
                 const query = {
@@ -99,8 +115,6 @@ export const orderitemsResolver = {
                     ],
                 };
                 const result = await client.query(query);
-
-                // Get the raw JSON response from PostgreSQL
                 const pgResponse = result.rows[0].result;
 
                 console.log("Edit Order Item Result:", pgResponse);
@@ -116,7 +130,16 @@ export const orderitemsResolver = {
             }
         },
 
-        deleteOrderItem: async (_, { orderitem_id, user_id }) => {
+        deleteOrderItem: async (_, { orderitem_id, user_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             console.log("Mutation: deleteOrderItem called with params:", { orderitem_id, user_id });
             try {
                 const query = {
@@ -124,8 +147,6 @@ export const orderitemsResolver = {
                     values: [user_id, orderitem_id],
                 };
                 const result = await client.query(query);
-
-                // Get the raw JSON response from PostgreSQL
                 const pgResponse = result.rows[0].result;
 
                 console.log("Delete Order Item Result:", pgResponse);

@@ -75,7 +75,16 @@ export const menuResolver = {
     },
     
     Mutation: {
-        addMenu: async (_, { menu, admin_id }) => {
+        addMenu: async (_, { menu, admin_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             console.log("Mutation: addMenu called with params:", { menu, admin_id });
             try {
                 const query = {
@@ -91,8 +100,6 @@ export const menuResolver = {
                     ],
                 };
                 const result = await client.query(query);
-                
-                // Get the raw JSON response from PostgreSQL
                 const pgResponse = result.rows[0].result;
                 
                 console.log("Add Menu Result:", pgResponse);
@@ -108,7 +115,16 @@ export const menuResolver = {
             }
         },
         
-        editMenu: async (_, { menu_id, menu, admin_id }) => {
+        editMenu: async (_, { menu_id, menu, admin_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             console.log("Mutation: editMenu called with params:", { menu_id, menu, admin_id });
             try {
                 const query = {
@@ -124,8 +140,6 @@ export const menuResolver = {
                     ],
                 };
                 const result = await client.query(query);
-                
-                // Get the raw JSON response from PostgreSQL
                 const pgResponse = result.rows[0].result;
                 
                 console.log("Edit Menu Result:", pgResponse);
@@ -141,17 +155,23 @@ export const menuResolver = {
             }
         },
         
-        deleteMenu: async (_, { menu_id, admin_id }) => {
+        deleteMenu: async (_, { menu_id, admin_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             console.log("Mutation: deleteMenu called with params:", { menu_id, admin_id });
             try {
-                // Assuming you have a fn_delete_menu function in PostgreSQL
                 const query = {
                     text: "SELECT * FROM fn_delete_menu($1, $2) as result",
                     values: [admin_id, menu_id],
                 };
                 const result = await client.query(query);
-                
-                // Get the raw JSON response from PostgreSQL
                 const pgResponse = result.rows[0].result;
                 
                 console.log("Delete Menu Result:", pgResponse);
@@ -168,6 +188,5 @@ export const menuResolver = {
         }
     },
     
-    // Add scalar resolver for preparation_time
     Time: TimeScalar
 };
