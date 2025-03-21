@@ -48,7 +48,16 @@ export const diningtableResolvers = {
     },
     
     Mutation: {
-        addDiningTable: async (_, { diningTable, admin_id }) => {
+        addDiningTable: async (_, { diningTable, admin_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             console.log("Mutation: addDiningTable called with params:", { diningTable, admin_id });
             try {
                 const query = {
@@ -57,14 +66,13 @@ export const diningtableResolvers = {
                 };
                 const result = await client.query(query);
                 
-                // Get the raw JSON response from PostgreSQL
                 const pgResponse = result.rows[0].result;
                 
                 console.log("Add Dining Table Result:", pgResponse);
                 
                 return {
-                    content: pgResponse.content,
-                    type: pgResponse.type,
+                    content: pgResponse.content || [],
+                    type: pgResponse.type.toUpperCase(),
                     message: pgResponse.message
                 };
             } catch (err) {
@@ -73,7 +81,16 @@ export const diningtableResolvers = {
             }
         },
         
-        editDiningTable: async (_, { table_id, diningTable, admin_id }) => {
+        editDiningTable: async (_, { table_id, diningTable, admin_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             console.log("Mutation: editDiningTable called with params:", { table_id, diningTable, admin_id });
             try {
                 const query = {
@@ -82,14 +99,12 @@ export const diningtableResolvers = {
                 };
                 
                 const result = await client.query(query);
-
-                // Get the raw JSON response from PostgreSQL
                 const pgResponse = result.rows[0].result;
                 
                 console.log("Edit Dining Table Result:", pgResponse);
                 
                 return {
-                    content: pgResponse.content,
+                    content: pgResponse.content || [],
                     type: pgResponse.type.toUpperCase(),
                     message: pgResponse.message
                 };
@@ -99,7 +114,16 @@ export const diningtableResolvers = {
             }
         },
         
-        deleteDiningTable: async (_, { table_id, admin_id }) => {
+        deleteDiningTable: async (_, { table_id, admin_id }, context) => {
+            // Check context for errors
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
+
             console.log("Mutation: deleteDiningTable called with params:", { table_id, admin_id });
             try {
                 const query = {
@@ -108,14 +132,12 @@ export const diningtableResolvers = {
                 };
                 
                 const result = await client.query(query);
-
-                // Get the raw JSON response from PostgreSQL
                 const pgResponse = result.rows[0].result;
                 
                 console.log("Delete Dining Table Result:", pgResponse);
                 
                 return {
-                    content: pgResponse.content,
+                    content: pgResponse.content || [],
                     type: pgResponse.type.toUpperCase(),
                     message: pgResponse.message
                 };
