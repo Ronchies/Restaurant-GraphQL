@@ -2,6 +2,7 @@ import { View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, Dimension
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import { useState, useEffect } from 'react';
 import styles from '../../assets/styles/account';
+import globalStyles from '../../assets/styles/globalStyles';
 
 export default function Tab() {
   const [username, setUsername] = useState('');
@@ -20,40 +21,43 @@ export default function Tab() {
 
   // Calculate responsive sizes
   const inputWidth = screenDimensions.width > 500 ? '80%' : '100%';
-  const fontSize = screenDimensions.width > 380 ? { header: 24, subtitle: 14, button: 16 } : { header: 20, subtitle: 12, button: 14 };
+  const fontSize = screenDimensions.width > 380 ? 
+    { header: globalStyles.typography.fontSize.xxlarge, subtitle: globalStyles.typography.fontSize.regular, button: globalStyles.typography.fontSize.medium } : 
+    { header: globalStyles.typography.fontSize.xlarge, subtitle: globalStyles.typography.fontSize.small, button: globalStyles.typography.fontSize.regular };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={globalStyles.layout.safeArea}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
         <ScrollView 
-          contentContainerStyle={styles.scrollContainer}
+          contentContainerStyle={globalStyles.layout.scrollContainer}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.container}>
             {/* Logo */}
             <View style={styles.logoContainer}>
-              <View style={styles.logo}>
-                <Text style={styles.logoText}>✦</Text>
+              <View style={[styles.logo, { backgroundColor: globalStyles.colors.primary }]}>
+                <Text style={[styles.logoText, { color: globalStyles.colors.white }]}>✦</Text>
               </View>
             </View>
             
             {/* Header */}
-            <Text style={[styles.header, { fontSize: fontSize.header }]}>Sign in to your Account</Text>
+            <Text style={[globalStyles.text.header, { fontSize: fontSize.header }]}>Sign in to your Account</Text>
             
             {/* Subtitle */}
-            <Text style={[styles.subtitle, { fontSize: fontSize.subtitle }]}>Enter your username and password to log in</Text>
+            <Text style={[globalStyles.text.subtitle, { fontSize: fontSize.subtitle }]}>Enter your username and password to log in</Text>
             
             {/* Form */}
             <View style={[styles.form, { width: inputWidth }]}>
               <TextInput
-                style={styles.input}
+                style={globalStyles.inputs.standard}
                 placeholder="Username"
                 value={username}
                 onChangeText={setUsername}
                 autoCapitalize="none"
+                placeholderTextColor={globalStyles.colors.text.light}
               />
               
               <View style={styles.passwordContainer}>
@@ -63,6 +67,7 @@ export default function Tab() {
                   secureTextEntry={!showPassword}
                   value={password}
                   onChangeText={setPassword}
+                  placeholderTextColor={globalStyles.colors.text.light}
                 />
                 <TouchableOpacity 
                   style={styles.eyeIcon}
@@ -71,41 +76,41 @@ export default function Tab() {
                   <FontAwesome5
                     name={showPassword ? "eye" : "eye-slash"}
                     size={20}
-                    color="#95a5a6"
+                    color={globalStyles.colors.text.light}
                   />
                 </TouchableOpacity> 
               </View>
 
               {/* Remember me and Forgot password */}
-              <View style={styles.formOptions}>
-                <View style={styles.rememberContainer}>
+              <View style={globalStyles.layout.spaceBetween}>
+                <View style={globalStyles.layout.row}>
                   <TouchableOpacity 
-                    style={[styles.checkbox, rememberMe && styles.checkboxChecked]}
+                    style={[styles.checkbox, rememberMe && { backgroundColor: globalStyles.colors.secondary, borderColor: globalStyles.colors.secondary }]}
                     onPress={() => setRememberMe(!rememberMe)}
                   >
                     {rememberMe && (
-                      <FontAwesome5 name="check" size={12} color="#fff" />
+                      <FontAwesome5 name="check" size={12} color={globalStyles.colors.white} />
                     )}
                   </TouchableOpacity>
-                  <Text style={styles.rememberText}>Remember me</Text>
+                  <Text style={{ fontSize: globalStyles.typography.fontSize.regular, color: globalStyles.colors.text.secondary }}>Remember me</Text>
                 </View>
                 
                 <TouchableOpacity>
-                  <Text style={styles.forgotText}>Forgot Password?</Text>
+                  <Text style={globalStyles.text.link}>Forgot Password?</Text>
                 </TouchableOpacity>
               </View>
               
               {/* Login Button */}
-              <TouchableOpacity style={styles.loginButton}>
-                <Text style={[styles.loginButtonText, { fontSize: fontSize.button }]}>Log In</Text>
+              <TouchableOpacity style={globalStyles.buttons.primary}>
+                <Text style={[globalStyles.buttons.primaryText, { fontSize: fontSize.button }]}>Log In</Text>
               </TouchableOpacity>
             </View>
             
             {/* Sign Up */}
-            <View style={styles.signUpContainer}>
-              <Text style={styles.noAccountText}>Don't have an account?</Text>
+            <View style={globalStyles.layout.row}>
+              <Text style={{ color: globalStyles.colors.text.secondary }}>Don't have an account?</Text>
               <TouchableOpacity>
-                <Text style={styles.signUpText}> Sign Up</Text>
+                <Text style={globalStyles.text.link}> Sign Up</Text>
               </TouchableOpacity>
             </View>
           </View>

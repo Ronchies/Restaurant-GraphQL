@@ -8,6 +8,7 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
+          headerShown: false,
           tabBarIcon: ({ color }) => <FontAwesome5 name="home" size={24} color={color} />,
         }}
       />
@@ -15,6 +16,7 @@ export default function TabLayout() {
         name="menu"
         options={{
           title: 'Menu',
+          headerShown: false,
           tabBarIcon: ({ color  }) => <FontAwesome5 name="hamburger" size={24} color={color} />,
         }}
       />
@@ -22,6 +24,7 @@ export default function TabLayout() {
         name="orders"
         options={{
           title: 'Orders',
+          headerShown: false,
           tabBarIcon: ({ color }) => <FontAwesome5 name="concierge-bell" size={24} color={color} />,
         }}
       />
@@ -29,6 +32,7 @@ export default function TabLayout() {
         name="account"
         options={{
           title: 'Account',
+          headerShown: false,
           tabBarIcon: ({ color }) => <FontAwesome5 name="user-alt" size={24} color={color} />,
         }}
       />
