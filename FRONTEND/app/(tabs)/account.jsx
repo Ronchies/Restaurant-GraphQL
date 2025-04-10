@@ -1,65 +1,90 @@
-import { View, Text, TextInput, TouchableOpacity, Image, SafeAreaView, Dimensions, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-import { useState, useEffect } from 'react';
-import styles from '../../assets/styles/account';
-import globalStyles from '../../assets/styles/globalStyles';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  Dimensions,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { useState, useEffect } from "react";
+import styles from "../../assets/styles/account";
+import globalStyles from "../../assets/styles/globalStyles";
 
 export default function Tab() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [screenDimensions, setScreenDimensions] = useState(Dimensions.get('window'));
+  const [screenDimensions, setScreenDimensions] = useState(
+    Dimensions.get("window")
+  );
 
   // Handle screen dimension changes
   useEffect(() => {
-    const subscription = Dimensions.addEventListener('change', ({ window }) => {
+    const subscription = Dimensions.addEventListener("change", ({ window }) => {
       setScreenDimensions(window);
     });
     return () => subscription.remove();
   }, []);
 
   // Calculate responsive sizes
-  const inputWidth = screenDimensions.width > 500 ? '80%' : '100%';
-  const fontSize = screenDimensions.width > 380 ? 
-    { header: globalStyles.typography.fontSize.xxlarge, subtitle: globalStyles.typography.fontSize.regular, button: globalStyles.typography.fontSize.medium } : 
-    { header: globalStyles.typography.fontSize.xlarge, subtitle: globalStyles.typography.fontSize.small, button: globalStyles.typography.fontSize.regular };
+  const inputWidth = screenDimensions.width > 500 ? "80%" : "100%";
+  const fontSize =
+    screenDimensions.width > 380
+      ? {
+          header: globalStyles.typography.fontSize.xxlarge,
+          subtitle: globalStyles.typography.fontSize.regular,
+          button: globalStyles.typography.fontSize.medium,
+        }
+      : {
+          header: globalStyles.typography.fontSize.xlarge,
+          subtitle: globalStyles.typography.fontSize.small,
+          button: globalStyles.typography.fontSize.regular,
+        };
 
   return (
-    <SafeAreaView style={globalStyles.layout.safeArea}>
-      <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <SafeAreaView style={styles.safeArea}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView 
-          contentContainerStyle={globalStyles.layout.scrollContainer}
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.container}>
             {/* Logo */}
             <View style={styles.logoContainer}>
-              <View style={[styles.logo, { backgroundColor: globalStyles.colors.primary }]}>
-                <Text style={[styles.logoText, { color: globalStyles.colors.white }]}>✦</Text>
+              <View style={styles.logo}>
+                <Text style={styles.logoText}>✦</Text>
               </View>
             </View>
-            
+
             {/* Header */}
-            <Text style={[globalStyles.text.header, { fontSize: fontSize.header }]}>Sign in to your Account</Text>
-            
+            <Text style={[styles.header, { fontSize: fontSize.header }]}>
+              Sign in to your Account
+            </Text>
+
             {/* Subtitle */}
-            <Text style={[globalStyles.text.subtitle, { fontSize: fontSize.subtitle }]}>Enter your username and password to log in</Text>
-            
+            <Text style={[styles.subtitle, { fontSize: fontSize.subtitle }]}>
+              Enter your username and password to log in
+            </Text>
+
             {/* Form */}
             <View style={[styles.form, { width: inputWidth }]}>
               <TextInput
-                style={globalStyles.inputs.standard}
+                style={styles.input}
                 placeholder="Username"
                 value={username}
                 onChangeText={setUsername}
                 autoCapitalize="none"
                 placeholderTextColor={globalStyles.colors.text.light}
               />
-              
+
               <View style={styles.passwordContainer}>
                 <TextInput
                   style={styles.passwordInput}
@@ -69,7 +94,7 @@ export default function Tab() {
                   onChangeText={setPassword}
                   placeholderTextColor={globalStyles.colors.text.light}
                 />
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.eyeIcon}
                   onPress={() => setShowPassword(!showPassword)}
                 >
@@ -78,39 +103,53 @@ export default function Tab() {
                     size={20}
                     color={globalStyles.colors.text.light}
                   />
-                </TouchableOpacity> 
+                </TouchableOpacity>
               </View>
 
               {/* Remember me and Forgot password */}
-              <View style={globalStyles.layout.spaceBetween}>
-                <View style={globalStyles.layout.row}>
-                  <TouchableOpacity 
-                    style={[styles.checkbox, rememberMe && { backgroundColor: globalStyles.colors.secondary, borderColor: globalStyles.colors.secondary }]}
+              <View style={styles.formOptions}>
+                <View style={styles.rememberContainer}>
+                  <TouchableOpacity
+                    style={[
+                      styles.checkbox,
+                      rememberMe && styles.checkboxChecked,
+                    ]}
                     onPress={() => setRememberMe(!rememberMe)}
                   >
                     {rememberMe && (
-                      <FontAwesome5 name="check" size={12} color={globalStyles.colors.white} />
+                      <FontAwesome5
+                        name="check"
+                        size={12}
+                        color={globalStyles.colors.white}
+                      />
                     )}
                   </TouchableOpacity>
-                  <Text style={{ fontSize: globalStyles.typography.fontSize.regular, color: globalStyles.colors.text.secondary }}>Remember me</Text>
+                  <Text style={styles.rememberText}>Remember me</Text>
                 </View>
-                
+
                 <TouchableOpacity>
-                  <Text style={globalStyles.text.link}>Forgot Password?</Text>
+                  <Text style={styles.forgotText}>Forgot Password?</Text>
                 </TouchableOpacity>
               </View>
-              
+
               {/* Login Button */}
-              <TouchableOpacity style={globalStyles.buttons.primary}>
-                <Text style={[globalStyles.buttons.primaryText, { fontSize: fontSize.button }]}>Log In</Text>
+              <TouchableOpacity style={styles.loginButton}>
+                <Text
+                  style={[
+                    styles.loginButtonText,
+                    { fontSize: fontSize.button },
+                  ]}
+                >
+                  Log In
+                </Text>
               </TouchableOpacity>
             </View>
-            
+
             {/* Sign Up */}
-            <View style={globalStyles.layout.row}>
-              <Text style={{ color: globalStyles.colors.text.secondary }}>Don't have an account?</Text>
+            <View style={styles.signUpContainer}>
+              <Text style={styles.noAccountText}>Don't have an account?</Text>
               <TouchableOpacity>
-                <Text style={globalStyles.text.link}> Sign Up</Text>
+                <Text style={styles.signUpText}> Sign Up</Text>
               </TouchableOpacity>
             </View>
           </View>
