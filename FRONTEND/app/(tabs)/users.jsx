@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet } from "react-native";
+import GET_USERS from "../queries/userQueries";
 
 export default function Tab() {
   return (

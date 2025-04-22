@@ -14,6 +14,10 @@ const startServer = async () => {
   const { url } = await startStandaloneServer(server, {
     context: appContext,
     listen: { port: 4002 },
+    cors: {
+      origin: "*",
+      credentials: true,
+    },
   });
   console.log(`🚀  Server ready at: ${url}`);
 };
