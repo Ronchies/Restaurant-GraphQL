@@ -11,10 +11,16 @@ import {
 } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { useState, useEffect } from "react";
-import styles from "../../assets/styles/account";
-import globalStyles from "../../assets/styles/globalStyles";
+import styles from "../assets/styles/account";
+import LOGIN_USER from "./mutations/login";
+import { useMutation } from "@apollo/client";
+import { useRouter } from "expo-router";
+import globalStyles from "../assets/styles/globalStyles";
+import * as SecureStore from "expo-secure-store"; // ✅ Import SecureStore
 
 export default function Tab() {
+  const router = useRouter();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -22,8 +28,71 @@ export default function Tab() {
   const [screenDimensions, setScreenDimensions] = useState(
     Dimensions.get("window")
   );
+  const [loginError, setLoginError] = useState("");
 
-  // Handle screen dimension changes
+  // ✅ Define the login function
+  const login = async (token, userType) => {
+    try {
+      console.log("Storing token and userType to SecureStore...");
+      await SecureStore.setItemAsync("user_token", token);
+      await SecureStore.setItemAsync("user_type", userType);
+      console.log("Stored successfully");
+    } catch (e) {
+      console.error("Error saving credentials:", e);
+    }
+  };
+
+  const [loginMutation, { loading }] = useMutation(LOGIN_USER, {
+    onCompleted: async (data) => {
+      console.log("Login successful:", data);
+
+      const { token, user } = data.loginUser;
+
+      await login(token, user.user_type);
+
+      if (user.user_type === "admin") {
+        console.log("Redirecting to admin dashboard...");
+        router.replace("/(admin)/index");
+      } else if (user.user_type === "user") {
+        console.log("Redirecting to user dashboard...");
+        router.replace("/(user)/index");
+      } else {
+        console.log("Unknown user type, going to default...");
+        router.replace("/(tabs)");
+      }
+    },
+    onError: (error) => {
+      console.error("Login error:", error);
+      setLoginError(error.message);
+    },
+  });
+
+  const handleLogin = async () => {
+    setLoginError("");
+
+    if (!username.trim() || !password.trim()) {
+      setLoginError("Please enter both username and password");
+      return;
+    }
+
+    console.log("Attempting login with:", {
+      username: username.trim(),
+      password: password.trim(),
+    });
+
+    try {
+      await loginMutation({
+        variables: {
+          username: username.trim(),
+          password: password.trim(),
+        },
+      });
+    } catch (e) {
+      console.error("Mutation execution error:", e);
+      setLoginError("An error occurred. Please try again.");
+    }
+  };
+
   useEffect(() => {
     const subscription = Dimensions.addEventListener("change", ({ window }) => {
       setScreenDimensions(window);
@@ -31,7 +100,6 @@ export default function Tab() {
     return () => subscription.remove();
   }, []);
 
-  // Calculate responsive sizes
   const inputWidth = screenDimensions.width > 500 ? "80%" : "100%";
   const fontSize =
     screenDimensions.width > 380
@@ -73,6 +141,13 @@ export default function Tab() {
             <Text style={[styles.subtitle, { fontSize: fontSize.subtitle }]}>
               Enter your username and password to log in
             </Text>
+
+            {/* Error Message */}
+            {loginError ? (
+              <Text style={{ color: "red", marginBottom: 10 }}>
+                {loginError}
+              </Text>
+            ) : null}
 
             {/* Form */}
             <View style={[styles.form, { width: inputWidth }]}>
@@ -133,7 +208,7 @@ export default function Tab() {
               </View>
 
               {/* Login Button */}
-              <TouchableOpacity style={styles.loginButton}>
+              <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
                 <Text
                   style={[
                     styles.loginButtonText,

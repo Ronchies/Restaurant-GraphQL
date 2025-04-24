@@ -35,16 +35,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="account"
-        options={{
-          title: "Account",
-          headerShown: false,
-          tabBarIcon: ({ color }) => (
-            <FontAwesome5 name="user-alt" size={24} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="users"
         options={{
           title: "Users",

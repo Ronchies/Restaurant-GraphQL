@@ -1,7 +1,6 @@
 import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { Link } from "expo-router";
 import globalStyles from '../../assets/styles/globalStyles'; // Update the path as needed
 
 export default function Tab() {
@@ -35,11 +34,9 @@ export default function Tab() {
             <View style={globalStyles.icons.bell}>
               <FontAwesome5 name="bell" size={24} color="black" />
             </View>
-              <Link href={"/account"}>
             <View style={globalStyles.icons.profile}>
               <Text style={globalStyles.text.profileText}>👤</Text>
             </View>
-            </Link>
           </View>
         </View>
 
