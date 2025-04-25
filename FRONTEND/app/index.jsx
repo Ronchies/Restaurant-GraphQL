@@ -12,9 +12,9 @@ export default function Index() {
         if (!token || !userType) {
           router.replace("/(tabs)");
         } else if (userType === "user") {
-          router.replace("/(user)/index");
+          router.replace("/(user)");
         } else if (userType === "admin") {
-          router.replace("/(admin)/index");
+          router.replace("/(admin)");
         } else {
           router.replace("/(tabs)");
         }
