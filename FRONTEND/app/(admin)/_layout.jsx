@@ -36,6 +36,17 @@ export default function AdminLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="users"
+        options={{
+          title: "Users",
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="user-alt" size={24} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

@@ -30,12 +30,13 @@ export default function Tab() {
   );
   const [loginError, setLoginError] = useState("");
 
-  // ✅ Define the login function
-  const login = async (token, userType) => {
+  // ✅ Updated login function to also store user_id
+  const login = async (token, userType, userId) => {
     try {
-      console.log("Storing token and userType to SecureStore...");
+      console.log("Storing credentials to SecureStore...");
       await SecureStore.setItemAsync("user_token", token);
       await SecureStore.setItemAsync("user_type", userType);
+      await SecureStore.setItemAsync("user_id", userId.toString()); // Store user_id as string
       console.log("Stored successfully");
     } catch (e) {
       console.error("Error saving credentials:", e);
@@ -48,7 +49,8 @@ export default function Tab() {
 
       const { token, user } = data.loginUser;
 
-      await login(token, user.user_type);
+      // ✅ Pass user.user_id to the login function
+      await login(token, user.user_type, user.user_id);
 
       if (user.user_type === "admin") {
         console.log("Redirecting to admin dashboard...");
