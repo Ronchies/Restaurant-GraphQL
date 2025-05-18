@@ -61,28 +61,14 @@ export default function Menu() {
         setIsAdmin(true);
         setAdminId(parseInt(userId));
       } else {
-        // Set hardcoded admin for development/testing
-        console.warn("⚠️ Admin check failed - USING FALLBACK ADMIN ID FOR TESTING");
-        
-        // DEVELOPMENT ONLY: Set fallback admin credentials
-        // ⚠️ Remove this in production!
-        setIsAdmin(true);
-        setAdminId(1); // Using ID 1 as fallback admin ID
-        
-        // Alert developer about the issue
-        Alert.alert(
-          "Development Mode", 
-          "Using fallback admin ID 1 for testing. In production, proper authentication will be required.",
-          [{ text: "OK" }]
-        );
+        console.log("❌ Not authenticated as admin");
+        setIsAdmin(false);
+        setAdminId(null);
       }
     } catch (error) {
       console.error("Error checking admin status:", error);
-      
-      // DEVELOPMENT ONLY: Set fallback admin credentials
-      console.warn("⚠️ Setting fallback admin ID due to error");
-      setIsAdmin(true);
-      setAdminId(1);
+      setIsAdmin(false);
+      setAdminId(null);
     }
   };
 
@@ -222,7 +208,7 @@ export default function Menu() {
     
     if (!adminId) {
       console.error("Admin ID is missing:", adminId);
-      Alert.alert("Error", "Admin ID not available. Please check console logs.");
+      Alert.alert("Error", "Admin ID not available. Please log in as an admin.");
       return;
     }
 
@@ -273,7 +259,7 @@ export default function Menu() {
     
     if (!adminId) {
       console.error("Admin ID is missing:", adminId);
-      Alert.alert("Error", "Admin ID not available. Please check console logs.");
+      Alert.alert("Error", "Admin ID not available. Please log in as an admin.");
       return;
     }
     
@@ -319,7 +305,7 @@ export default function Menu() {
   const handleDelete = () => {
     if (!adminId) {
       console.error("Admin ID is missing:", adminId);
-      Alert.alert("Error", "Admin ID not available. Please check console logs.");
+      Alert.alert("Error", "Admin ID not available. Please log in as an admin.");
       return;
     }
     

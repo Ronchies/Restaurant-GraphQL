@@ -50,13 +50,13 @@ export const orderResolver = {
     Mutation: {
         addOrder: async (_, { order, user_id }, context) => {
             // Check context for errors
-            if (context?.type === "error") {
-                return {
-                    type: "ERROR",
-                    message: context.message,
-                    content: []
-                };
-            }
+          //  if (context?.type === "error") {
+          //      return {
+          //          type: "ERROR",
+          //          message: context.message,
+          //          content: []
+          //      };
+          //  }
 
             console.log("Mutation: addOrder called with params:", { order, user_id });
             try {
@@ -87,13 +87,13 @@ export const orderResolver = {
         
         editOrder: async (_, { order_id, order, user_id }, context) => {
             // Check context for errors
-            if (context?.type === "error") {
-                return {
-                    type: "ERROR",
-                    message: context.message,
-                    content: []
-                };
-            }
+         //   if (context?.type === "error") {
+          //      return {
+          //          type: "ERROR",
+          //          message: context.message,
+          //          content: []
+          //      };
+          //  }
 
             console.log("Mutation: editOrder called with params:", { order_id, order, user_id });
             try {
@@ -124,13 +124,13 @@ export const orderResolver = {
         
         deleteOrder: async (_, { order_id, user_id }, context) => {
             // Check context for errors
-            if (context?.type === "error") {
-                return {
-                    type: "ERROR",
-                    message: context.message,
-                    content: []
-                };
-            }
+         //   if (context?.type === "error") {
+         //       return {
+         //           type: "ERROR",
+         //           message: context.message,
+         //           content: []
+         //       };
+         //   }
 
             console.log("Mutation: deleteOrder called with params:", { order_id, user_id });
             try {

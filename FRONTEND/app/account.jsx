@@ -55,8 +55,8 @@ export default function Tab() {
       if (user.user_type === "admin") {
         console.log("Redirecting to admin dashboard...");
         router.replace("/(admin)");
-      } else if (user.user_type === "user") {
-        console.log("Redirecting to user dashboard...");
+      } else if (user.user_type === "employee") {
+        console.log("Redirecting to employee dashboard...");
         router.replace("/(user)");
       } else {
         console.log("Unknown user type, going to default...");
