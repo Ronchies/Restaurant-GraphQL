@@ -36,13 +36,13 @@ export const usersResolver = {
   Mutation: {
     addUser: async (_, { user, admin_id }, context) => {
       // Check context for errors
-      // if (context?.type === "error") {
-      //     return {
-      //         type: "ERROR",
-      //         message: context.message,
-      //         content: []
-      //     };
-      // }
+       if (context?.type === "error") {
+           return {
+               type: "ERROR",
+               message: context.message,
+               content: []
+           };
+       }
 
       try {
         const hashedPassword = await bcrypt.hash(user.password, 10);
@@ -81,13 +81,13 @@ export const usersResolver = {
 
     editUser: async (_, { id, user, admin_id }, context) => {
       // Check context for errors
-      // if (context?.type === "error") {
-      //     return {
-      //         type: "ERROR",
-      //         message: context.message,
-      //         content: []
-      //     };
-      // }
+       if (context?.type === "error") {
+           return {
+               type: "ERROR",
+               message: context.message,
+               content: []
+           };
+       }
 
       try {
         let hashedPassword = null;
@@ -124,13 +124,13 @@ export const usersResolver = {
 
     deleteUser: async (_, { id, admin_id }, context) => {
       // Check context for errors
-      // if (context?.type === "error") {
-      //     return {
-      //         type: "ERROR",
-      //         message: context.message,
-      //         content: []
-      //     };
-      // }
+       if (context?.type === "error") {
+           return {
+               type: "ERROR",
+               message: context.message,
+               content: []
+           };
+       }
 
       try {
         const query = {

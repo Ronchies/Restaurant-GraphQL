@@ -54,13 +54,13 @@ export const orderitemsResolver = {
     Mutation: {
         addOrderItem: async (_, { orderItem, user_id }, context) => {
             // Check context for errors
-        //    if (context?.type === "error") {
-        //        return {
-        //            type: "ERROR",
-        //            message: context.message,
-         //           content: []
-         //       };
-        //    }
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+           }
 
             console.log("Mutation: addOrderItem called with params:", { orderItem, user_id });
             try {
@@ -92,13 +92,13 @@ export const orderitemsResolver = {
 
         editOrderItem: async (_, { orderitem_id, orderItem, user_id }, context) => {
             // Check context for errors
-       //     if (context?.type === "error") {
-       //         return {
-       //             type: "ERROR",
-       //             message: context.message,
-       //             content: []
-       //         };
-       //     }
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
 
             console.log("Mutation: editOrderItem called with params:", { orderitem_id, orderItem, user_id });
             try {
@@ -132,13 +132,13 @@ export const orderitemsResolver = {
 
         deleteOrderItem: async (_, { orderitem_id, user_id }, context) => {
             // Check context for errors
-       //     if (context?.type === "error") {
-       //         return {
-       //             type: "ERROR",
-       //             message: context.message,
-       //             content: []
-       //         };
-       //     }
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
 
             console.log("Mutation: deleteOrderItem called with params:", { orderitem_id, user_id });
             try {

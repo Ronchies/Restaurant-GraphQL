@@ -32,6 +32,24 @@ const orderStyles = StyleSheet.create({
     fontWeight: globalStyles.typography.fontWeight.bold,
   },
 
+  // Add order button
+  addOrderButton: {
+    backgroundColor: globalStyles.colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: globalStyles.spacing.medium,
+    paddingHorizontal: globalStyles.spacing.large,
+    borderRadius: globalStyles.borderRadius.medium,
+    marginVertical: globalStyles.spacing.medium,
+    ...globalStyles.shadows.button,
+  },
+  addOrderButtonText: {
+    color: globalStyles.colors.white,
+    fontWeight: globalStyles.typography.fontWeight.bold,
+    marginLeft: globalStyles.spacing.small,
+  },
+
   // Order cards
   ordersList: {
     marginTop: globalStyles.spacing.medium,
@@ -59,26 +77,6 @@ const orderStyles = StyleSheet.create({
     fontWeight: globalStyles.typography.fontWeight.bold,
     fontSize: globalStyles.typography.fontSize.medium,
     color: globalStyles.colors.text.primary,
-    marginBottom: globalStyles.spacing.xsmall,
-  },
-  rightSection: {
-    width: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  statusBadge: {
-    paddingVertical: globalStyles.spacing.xsmall,
-    paddingHorizontal: globalStyles.spacing.small,
-    borderRadius: globalStyles.borderRadius.medium,
-    marginBottom: globalStyles.spacing.small,
-    alignItems: 'center',
-    width: '100%',
-  },
-  statusText: {
-    fontSize: globalStyles.typography.fontSize.small,
-    fontWeight: globalStyles.typography.fontWeight.medium,
-    textAlign: 'center',
   },
   orderInfo: {
     fontSize: globalStyles.typography.fontSize.small,
@@ -90,13 +88,56 @@ const orderStyles = StyleSheet.create({
     fontWeight: globalStyles.typography.fontWeight.bold,
     color: globalStyles.colors.text.primary,
   },
+  orderActions: {
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    gap: globalStyles.spacing.small,
+  },
+  statusBadge: {
+    paddingVertical: globalStyles.spacing.xsmall,
+    paddingHorizontal: globalStyles.spacing.medium,
+    borderRadius: globalStyles.borderRadius.medium,
+    alignSelf: 'flex-end',
+  },
+  statusText: {
+    fontSize: globalStyles.typography.fontSize.small,
+    fontWeight: globalStyles.typography.fontWeight.medium,
+  },
+  actionButtonsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: globalStyles.spacing.xsmall,
+  },
   viewButton: {
     backgroundColor: globalStyles.colors.accent,
     paddingVertical: globalStyles.spacing.xsmall,
-    paddingHorizontal: globalStyles.spacing.large,
+    paddingHorizontal: globalStyles.spacing.medium,
     borderRadius: globalStyles.borderRadius.pill,
   },
   viewButtonText: {
+    color: globalStyles.colors.white,
+    fontSize: globalStyles.typography.fontSize.small,
+    fontWeight: globalStyles.typography.fontWeight.medium,
+  },
+  editButton: {
+    backgroundColor: globalStyles.colors.primary,
+    paddingVertical: globalStyles.spacing.xsmall,
+    paddingHorizontal: globalStyles.spacing.medium,
+    borderRadius: globalStyles.borderRadius.pill,
+  },
+  editButtonText: {
+    color: globalStyles.colors.white,
+    fontSize: globalStyles.typography.fontSize.small,
+    fontWeight: globalStyles.typography.fontWeight.medium,
+  },
+  deleteButton: {
+    backgroundColor: globalStyles.colors.status.error,
+    paddingVertical: globalStyles.spacing.xsmall,
+    paddingHorizontal: globalStyles.spacing.medium,
+    borderRadius: globalStyles.borderRadius.pill,
+  },
+  deleteButtonText: {
     color: globalStyles.colors.white,
     fontSize: globalStyles.typography.fontSize.small,
     fontWeight: globalStyles.typography.fontWeight.medium,
@@ -205,203 +246,108 @@ const orderStyles = StyleSheet.create({
   // Modal styles
   modalContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     padding: globalStyles.spacing.medium,
   },
   modalContent: {
     backgroundColor: globalStyles.colors.white,
     borderRadius: globalStyles.borderRadius.large,
-    width: '95%',
-    maxHeight: '85%',
     padding: globalStyles.spacing.large,
-    ...globalStyles.shadows.large,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: globalStyles.spacing.medium,
-    paddingBottom: globalStyles.spacing.medium,
-    borderBottomWidth: 1,
-    borderBottomColor: globalStyles.colors.border,
+    width: '100%',
+    maxWidth: 500,
+    ...globalStyles.shadows.modal,
   },
   modalTitle: {
     fontSize: globalStyles.typography.fontSize.large,
     fontWeight: globalStyles.typography.fontWeight.bold,
-    color: globalStyles.colors.primary,
-    textAlign: 'center',
-    marginVertical: globalStyles.spacing.medium,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: globalStyles.spacing.medium,
-    right: globalStyles.spacing.medium,
-    backgroundColor: globalStyles.colors.background,
-    borderRadius: 20,
-    padding: globalStyles.spacing.small,
-    zIndex: 10,
-  },
-
-  // Order info card in modal
-  orderInfoCard: {
-    backgroundColor: globalStyles.colors.background,
-    borderRadius: globalStyles.borderRadius.medium,
-    padding: globalStyles.spacing.medium,
-    marginBottom: globalStyles.spacing.large,
-    ...globalStyles.shadows.small,
-  },
-  orderDetailSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: globalStyles.spacing.small,
-    borderBottomWidth: 1,
-    borderBottomColor: globalStyles.colors.border,
-  },
-  orderDetailLabel: {
-    fontSize: globalStyles.typography.fontSize.regular,
-    color: globalStyles.colors.text.secondary,
-  },
-  orderDetailValue: {
-    fontSize: globalStyles.typography.fontSize.regular,
     color: globalStyles.colors.text.primary,
-  },
-
-  // Order items card in modal
-  orderItemsCard: {
-    backgroundColor: globalStyles.colors.white,
-    borderRadius: globalStyles.borderRadius.medium,
-    padding: globalStyles.spacing.medium,
     marginBottom: globalStyles.spacing.large,
-    ...globalStyles.shadows.small,
+    textAlign: 'center',
   },
-  orderItemsHeader: {
-    fontSize: globalStyles.typography.fontSize.medium,
-    fontWeight: globalStyles.typography.fontWeight.bold,
+  formGroup: {
     marginBottom: globalStyles.spacing.medium,
-    color: globalStyles.colors.text.primary,
   },
-  orderItemsTableHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: globalStyles.spacing.small,
-    borderBottomWidth: 2,
-    borderBottomColor: globalStyles.colors.primary,
-    marginBottom: globalStyles.spacing.small,
-  },
-  orderItemsTableHeaderText: {
-    fontWeight: globalStyles.typography.fontWeight.bold,
+  formLabel: {
     fontSize: globalStyles.typography.fontSize.regular,
-  },
-  orderItemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: globalStyles.spacing.medium,
-    borderBottomWidth: 1,
-    borderBottomColor: globalStyles.colors.border,
-  },
-  orderItemName: {
-    flex: 3,
-    fontSize: globalStyles.typography.fontSize.regular,
-    color: globalStyles.colors.text.primary,
-  },
-  orderItemQuantity: {
-    flex: 1,
-    fontSize: globalStyles.typography.fontSize.regular,
-    textAlign: 'center',
     fontWeight: globalStyles.typography.fontWeight.medium,
     color: globalStyles.colors.text.primary,
+    marginBottom: globalStyles.spacing.xsmall,
   },
-  orderItemPrice: {
-    flex: 1,
+  formInput: {
+    borderWidth: 1,
+    borderColor: globalStyles.colors.border,
+    borderRadius: globalStyles.borderRadius.medium,
+    padding: globalStyles.spacing.medium,
     fontSize: globalStyles.typography.fontSize.regular,
-    textAlign: 'right',
-    fontWeight: globalStyles.typography.fontWeight.medium,
-    color: globalStyles.colors.text.primary,
   },
-
-  // Price summary in modal
-  priceSummary: {
-    marginTop: globalStyles.spacing.medium,
-    borderTopWidth: 1,
-    borderTopColor: globalStyles.colors.border,
-    paddingTop: globalStyles.spacing.medium,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: globalStyles.spacing.small,
-  },
-  summaryLabel: {
+  formValue: {
     fontSize: globalStyles.typography.fontSize.regular,
     color: globalStyles.colors.text.secondary,
+    paddingVertical: globalStyles.spacing.small,
   },
-  summaryValue: {
-    fontSize: globalStyles.typography.fontSize.regular,
-    fontWeight: globalStyles.typography.fontWeight.medium,
-  },
-  totalRow: {
+  statusButtonsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: globalStyles.spacing.small,
-    paddingTop: globalStyles.spacing.small,
-    borderTopWidth: 1,
-    borderTopColor: globalStyles.colors.border,
+    flexWrap: 'wrap',
+    gap: globalStyles.spacing.small,
   },
-  totalLabel: {
-    fontSize: globalStyles.typography.fontSize.regular,
-    fontWeight: globalStyles.typography.fontWeight.bold,
-  },
-  totalValue: {
-    fontSize: globalStyles.typography.fontSize.medium,
-    fontWeight: globalStyles.typography.fontWeight.bold,
-    color: globalStyles.colors.primary,
-  },
-
-  // Modal action buttons
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: globalStyles.spacing.medium,
-  },
-  modalActionButton: {
-    flex: 1,
-    paddingVertical: globalStyles.spacing.medium,
+  statusButton: {
+    paddingVertical: globalStyles.spacing.small,
+    paddingHorizontal: globalStyles.spacing.medium,
     borderRadius: globalStyles.borderRadius.medium,
-    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: globalStyles.colors.border,
   },
-  cancelButton: {
-    marginRight: globalStyles.spacing.small,
-    backgroundColor: globalStyles.colors.border,
-  },
-  cancelButtonText: {
-    fontWeight: globalStyles.typography.fontWeight.bold,
-    color: globalStyles.colors.text.primary,
-  },
-  confirmButton: {
-    marginLeft: globalStyles.spacing.small,
+  statusButtonSelected: {
     backgroundColor: globalStyles.colors.primary,
-    ...globalStyles.shadows.small,
+    borderColor: globalStyles.colors.primary,
   },
-  confirmButtonText: {
-    fontWeight: globalStyles.typography.fontWeight.bold,
+  statusButtonText: {
+    fontSize: globalStyles.typography.fontSize.small,
+    color: globalStyles.colors.text.primary,
+  },
+  statusButtonTextSelected: {
     color: globalStyles.colors.white,
+    fontWeight: globalStyles.typography.fontWeight.bold,
   },
-
-  // Empty state for items
-  noItemsContainer: {
-    padding: globalStyles.spacing.xlarge,
+  modalButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: globalStyles.spacing.large,
+    gap: globalStyles.spacing.medium,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: globalStyles.spacing.medium,
+    borderRadius: globalStyles.borderRadius.medium,
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  noItemsIcon: {
+  modalCancelButton: {
+    backgroundColor: globalStyles.colors.gray,
+  },
+  modalSubmitButton: {
+    backgroundColor: globalStyles.colors.primary,
+  },
+  modalDeleteButton: {
+    backgroundColor: globalStyles.colors.status.error,
+  },
+  modalButtonText: {
+    color: globalStyles.colors.white,
+    fontWeight: globalStyles.typography.fontWeight.bold,
+  },
+  deleteConfirmationText: {
+    fontSize: globalStyles.typography.fontSize.regular,
+    textAlign: 'center',
     marginBottom: globalStyles.spacing.medium,
   },
-  noItemsText: {
-    marginTop: globalStyles.spacing.medium,
-    color: globalStyles.colors.text.secondary,
+  deleteWarningText: {
+    fontSize: globalStyles.typography.fontSize.small,
+    color: globalStyles.colors.status.error,
     textAlign: 'center',
+    marginBottom: globalStyles.spacing.large,
+    fontWeight: globalStyles.typography.fontWeight.medium,
   },
 });
 

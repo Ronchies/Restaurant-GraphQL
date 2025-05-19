@@ -77,13 +77,13 @@ export const menuResolver = {
     Mutation: {
         addMenu: async (_, { menu, admin_id }, context) => {
             // Check context for errors
-           // if (context?.type === "error") {
-           //     return {
-           //         type: "ERROR",
-           //         message: context.message,
-           //         content: []
-            //    };
-           // }
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
 
             console.log("Mutation: addMenu called with params:", { menu, admin_id });
             try {
@@ -117,13 +117,13 @@ export const menuResolver = {
         
         editMenu: async (_, { menu_id, menu, admin_id }, context) => {
             // Check context for errors
-          //  if (context?.type === "error") {
-          //      return {
-          //          type: "ERROR",
-          //          message: context.message,
-          //          content: []
-          //      };
-          //  }
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
 
             console.log("Mutation: editMenu called with params:", { menu_id, menu, admin_id });
             try {
@@ -157,13 +157,13 @@ export const menuResolver = {
         
         deleteMenu: async (_, { menu_id, admin_id }, context) => {
             // Check context for errors
-         //   if (context?.type === "error") {
-         //       return {
-         //           type: "ERROR",
-         //           message: context.message,
-         //           content: []
-         //       };
-          //  }
+            if (context?.type === "error") {
+                return {
+                    type: "ERROR",
+                    message: context.message,
+                    content: []
+                };
+            }
 
             console.log("Mutation: deleteMenu called with params:", { menu_id, admin_id });
             try {

@@ -10,7 +10,7 @@ import { onError } from "@apollo/client/link/error";
 import * as SecureStore from "expo-secure-store";
 
 
-const API_ENDPOINT = "http://192.168.68.106:4002/graphql";
+const API_ENDPOINT = "http://192.168.68.112:4002/graphql";
 
 // Middleware to add auth token
 const authLink = new ApolloLink(async (operation, forward) => {
