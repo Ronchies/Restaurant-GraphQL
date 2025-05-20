@@ -204,22 +204,24 @@ export default function Orders() {
   };
 
   // Function to handle view order details
-  const handleViewOrder = (order) => {
-    console.log("Navigating to order details:", order);
+const handleViewOrder = (order) => {
+  console.log("Navigating to order details:", order);
     
     // Navigate to ordersandorderitem.jsx in the (screens) folder
     // Pass the order details as params
-    router.push({
-      pathname: '/(screens)/ordersandorderitem',
-      params: {
-        orderId: order.id,
-        table: order.table,
-        time: order.time,
-        price: order.price,
-        status: order.status
-      }
-    });
-  };
+router.push({
+    pathname: '/(screens)/ordersandorderitem',
+    params: {
+      orderId: order.id,
+      table: order.table,
+      time: order.time,
+      price: order.price,
+      status: order.status,
+      userRole: isAdmin ? 'admin' : 'employee', // Add user role
+      userId: userId // Add user ID
+    }
+  });
+};
 
   // Retry loading orders
   const handleRetryLoad = () => {

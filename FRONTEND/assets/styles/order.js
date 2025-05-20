@@ -324,8 +324,10 @@ const orderStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  modalCancelButton: {
-    backgroundColor: globalStyles.colors.gray,
+   modalCancelButton: {
+    backgroundColor: globalStyles.colors.text.secondary,
+    borderWidth: 1,
+    borderColor: globalStyles.colors.border,
   },
   modalSubmitButton: {
     backgroundColor: globalStyles.colors.primary,
