@@ -324,8 +324,8 @@ const orderStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-   modalCancelButton: {
-    backgroundColor: globalStyles.colors.text.secondary,
+  modalCancelButton: {
+    backgroundColor: globalStyles.colors.background,
     borderWidth: 1,
     borderColor: globalStyles.colors.border,
   },
@@ -339,6 +339,10 @@ const orderStyles = StyleSheet.create({
     color: globalStyles.colors.white,
     fontWeight: globalStyles.typography.fontWeight.bold,
   },
+  modalCancelButtonText: {
+    color: globalStyles.colors.text.primary,
+    fontWeight: globalStyles.typography.fontWeight.bold,
+  },
   deleteConfirmationText: {
     fontSize: globalStyles.typography.fontSize.regular,
     textAlign: 'center',
@@ -350,6 +354,61 @@ const orderStyles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: globalStyles.spacing.large,
     fontWeight: globalStyles.typography.fontWeight.medium,
+  },
+  
+  // Table selector styles
+  tableList: {
+    maxHeight: 300,
+    marginBottom: globalStyles.spacing.medium,
+  },
+  tableListContent: {
+    paddingVertical: globalStyles.spacing.small,
+  },
+  tableItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: globalStyles.spacing.medium,
+    paddingHorizontal: globalStyles.spacing.large,
+    borderRadius: globalStyles.borderRadius.medium,
+    marginBottom: globalStyles.spacing.small,
+    backgroundColor: globalStyles.colors.background,
+    borderWidth: 1,
+    borderColor: globalStyles.colors.border,
+  },
+  tableItemSelected: {
+    backgroundColor: globalStyles.colors.primary,
+    borderColor: globalStyles.colors.primary,
+  },
+  tableItemText: {
+    fontSize: globalStyles.typography.fontSize.regular,
+    fontWeight: globalStyles.typography.fontWeight.medium,
+    color: globalStyles.colors.text.primary,
+  },
+  tableItemTextSelected: {
+    color: globalStyles.colors.white,
+    fontWeight: globalStyles.typography.fontWeight.bold,
+  },
+  tableSelector: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: globalStyles.spacing.medium,
+    paddingHorizontal: globalStyles.spacing.large,
+    borderWidth: 1,
+    borderColor: globalStyles.colors.border,
+    borderRadius: globalStyles.borderRadius.medium,
+    backgroundColor: globalStyles.colors.white,
+  },
+  tableSelectorText: {
+    fontSize: globalStyles.typography.fontSize.regular,
+    color: globalStyles.colors.text.primary,
+  },
+  errorText: {
+    fontSize: globalStyles.typography.fontSize.regular,
+    color: globalStyles.colors.status.error,
+    textAlign: 'center',
+    marginVertical: globalStyles.spacing.large,
   },
 });
 

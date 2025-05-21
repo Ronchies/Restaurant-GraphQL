@@ -17,6 +17,7 @@ import ordersandorderitemStyles from '../../assets/styles/ordersandorderitem';
 import { useQuery, useMutation } from "@apollo/client";
 import GET_ORDERSITEMS from "../../app/queries/orderitemsQueries";
 import GET_MENUS from "../../app/queries/menuQueries";
+import GET_DININGTABLE from "../../app/queries/diningtableQueries";
 import { DELETE_ORDERITEM, ADD_ORDERITEM, UPDATE_ORDERITEM } from "../../app/mutations/orderMutation";
 
 export default function OrderAndOrderItem() {
@@ -29,6 +30,7 @@ export default function OrderAndOrderItem() {
   // State for processed order items
   const [orderItems, setOrderItems] = useState([]);
   const [availableMenuItems, setAvailableMenuItems] = useState([]);
+  const [tableDetails, setTableDetails] = useState(null);
   
   // Modal states
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
@@ -55,6 +57,13 @@ export default function OrderAndOrderItem() {
     error: menusError, 
     data: menusData 
   } = useQuery(GET_MENUS);
+
+  // Fetch dining table data
+  const {
+    loading: tablesLoading,
+    error: tablesError,
+    data: tablesData
+  } = useQuery(GET_DININGTABLE);
 
   // Mutations
   const [deleteOrderItem, { loading: deleteLoading }] = useMutation(DELETE_ORDERITEM, {
@@ -97,6 +106,25 @@ export default function OrderAndOrderItem() {
       Alert.alert("Error", "Failed to update order item");
     }
   });
+
+  // Process dining table data when available
+  useEffect(() => {
+    if (tablesData?.diningtables && table) {
+      console.log("Processing dining table data");
+      const matchingTable = tablesData.diningtables.find(item => {
+        // Try to match by table_id or table_name
+        return item.table_id.toString() === table.toString() || 
+               item.table_name.toString() === table.toString();
+      });
+      
+      if (matchingTable) {
+        console.log("Found matching table:", matchingTable);
+        setTableDetails(matchingTable);
+      } else {
+        console.log("No matching table found for:", table);
+      }
+    }
+  }, [tablesData, table]);
 
   // Process order items when data is available
   useEffect(() => {
@@ -251,9 +279,26 @@ export default function OrderAndOrderItem() {
     setIsDeleteModalVisible(true);
   };
 
+  // Get table name from tableDetails or use the passed parameter
+  const getTableName = () => {
+    if (tableDetails) {
+      return tableDetails.table_name;
+    }
+    return table || 'Unknown';
+  };
+
+  // Get table availability status
+  const getTableStatus = () => {
+    if (tableDetails) {
+      return tableDetails.is_available ? 'Available' : 'Occupied';
+    }
+    return 'Unknown';
+  };
+
   // Additional order details
   const orderDetails = {
-    table: table || 'Unknown',
+    table: getTableName(),
+    tableStatus: getTableStatus(),
     time: time || 'Unknown',
     date: new Date().toLocaleDateString(),
     total: price || '$0.00',
@@ -308,6 +353,22 @@ export default function OrderAndOrderItem() {
               <Text style={ordersandorderitemStyles.summaryLabel}>Table:</Text>
               <Text style={ordersandorderitemStyles.summaryValue}>{orderDetails.table}</Text>
             </View>
+            {tableDetails && (
+              <View style={ordersandorderitemStyles.summaryRow}>
+                <Text style={ordersandorderitemStyles.summaryLabel}>Table Status:</Text>
+                <View style={[
+                  ordersandorderitemStyles.statusBadge,
+                  {backgroundColor: orderDetails.tableStatus === 'Available' ? globalStyles.colors.status.success + '20' : globalStyles.colors.status.warning + '20'}
+                ]}>
+                  <Text style={[
+                    ordersandorderitemStyles.statusText,
+                    {color: orderDetails.tableStatus === 'Available' ? globalStyles.colors.status.success : globalStyles.colors.status.warning}
+                  ]}>
+                    {orderDetails.tableStatus}
+                  </Text>
+                </View>
+              </View>
+            )}
             <View style={ordersandorderitemStyles.summaryRow}>
               <Text style={ordersandorderitemStyles.summaryLabel}>Time:</Text>
               <Text style={ordersandorderitemStyles.summaryValue}>{orderDetails.time}</Text>
@@ -358,7 +419,7 @@ export default function OrderAndOrderItem() {
         </View>
 
         {/* Loading State */}
-        {(itemsLoading || menusLoading) && (
+        {(itemsLoading || menusLoading || tablesLoading) && (
           <View style={globalStyles.state.loading}>
             <ActivityIndicator size="large" color={globalStyles.colors.primary} />
             <Text style={globalStyles.text.loadingText}>Loading order items...</Text>
@@ -366,7 +427,7 @@ export default function OrderAndOrderItem() {
         )}
 
         {/* Error State */}
-        {(itemsError || menusError) && (
+        {(itemsError || menusError || tablesError) && (
           <View style={globalStyles.state.error}>
             <Text style={globalStyles.text.errorText}>Failed to load order items</Text>
             <TouchableOpacity 
@@ -379,7 +440,7 @@ export default function OrderAndOrderItem() {
         )}
 
         {/* Empty State */}
-        {!itemsLoading && !menusLoading && !itemsError && !menusError && orderItems.length === 0 && (
+        {!itemsLoading && !menusLoading && !tablesLoading && !itemsError && !menusError && !tablesError && orderItems.length === 0 && (
           <View style={ordersandorderitemStyles.emptyContainer}>
             <Text style={ordersandorderitemStyles.emptyText}>No items found for this order.</Text>
             {canAddItems && (
@@ -394,7 +455,7 @@ export default function OrderAndOrderItem() {
         )}
 
         {/* Order Items */}
-        {!itemsLoading && !menusLoading && !itemsError && !menusError && orderItems.map((item, index) => (
+        {!itemsLoading && !menusLoading && !tablesLoading && !itemsError && !menusError && !tablesError && orderItems.map((item, index) => (
           <View key={index} style={ordersandorderitemStyles.orderItemCard}>
             <View style={ordersandorderitemStyles.orderItemHeader}>
               <View>

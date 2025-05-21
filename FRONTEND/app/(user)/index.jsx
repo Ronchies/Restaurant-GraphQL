@@ -3,10 +3,8 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  Dimensions,
   TouchableOpacity,
 } from "react-native";
-import { LineChart } from "react-native-chart-kit";
 import { FontAwesome5 } from "@expo/vector-icons";
 import globalStyles from "../../assets/styles/globalStyles"; // Update the path as needed
 import * as SecureStore from "expo-secure-store";
@@ -19,17 +17,6 @@ export default function Tab() {
     { id: "1", table: "3", time: "10:30:00 AM", status: "Served" },
     { id: "1", table: "3", time: "10:30:00 AM", status: "Served" },
   ];
-
-  const monthlyData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"],
-    datasets: [
-      {
-        data: [2000, 4500, 3500, 5500, 4000, 6000, 4500],
-      },
-    ],
-  };
-
-  const screenWidth = Dimensions.get("window").width - 40;
 
   // Update your handleLogout function
   const handleLogout = async () => {
@@ -109,11 +96,15 @@ export default function Tab() {
 
           <View
             style={{
-              ...globalStyles.layout.spaceBetween,
               marginTop: globalStyles.spacing.large,
             }}
           >
-            <View style={globalStyles.cards.stats}>
+            <View style={{
+              ...globalStyles.cards.stats,
+              width: '100%',
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+            }}>
               <View style={globalStyles.icons.statsBlue}>
                 <Text
                   style={{ fontSize: globalStyles.typography.fontSize.large }}
@@ -123,20 +114,6 @@ export default function Tab() {
               </View>
               <View>
                 <Text style={globalStyles.text.statsLabel}>Total Revenue</Text>
-                <Text style={globalStyles.text.statsValue}>50,000k</Text>
-              </View>
-            </View>
-
-            <View style={globalStyles.cards.stats}>
-              <View style={globalStyles.icons.statsBlue}>
-                <Text
-                  style={{ fontSize: globalStyles.typography.fontSize.large }}
-                >
-                  $
-                </Text>
-              </View>
-              <View>
-                <Text style={globalStyles.text.statsLabel}>Today's Sales</Text>
                 <Text style={globalStyles.text.statsValue}>50,000k</Text>
               </View>
             </View>
@@ -167,34 +144,6 @@ export default function Tab() {
               </View>
             </View>
           ))}
-        </View>
-
-        {/* Monthly Revenue Chart */}
-        <View style={globalStyles.cards.standard}>
-          <Text style={globalStyles.text.sectionTitle}>Monthly Revenue</Text>
-          <LineChart
-            data={monthlyData}
-            width={screenWidth}
-            height={220}
-            chartConfig={{
-              backgroundColor: globalStyles.colors.white,
-              backgroundGradientFrom: globalStyles.colors.white,
-              backgroundGradientTo: globalStyles.colors.white,
-              decimalPlaces: 0,
-              color: (opacity = 1) => `rgba(0, 122, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-              style: {
-                borderRadius: globalStyles.borderRadius.xlarge,
-              },
-              propsForDots: {
-                r: "6",
-                strokeWidth: "2",
-                stroke: "#0066cc",
-              },
-            }}
-            bezier
-            style={globalStyles.charts.standard}
-          />
         </View>
       </View>
     </ScrollView>

@@ -19,6 +19,7 @@ import { useQuery, useMutation } from "@apollo/client";
 import GET_ORDERS from "../../app/queries/orderQueries";
 import GET_MENUS from "../../app/queries/menuQueries";
 import GET_ORDERSITEMS from "../../app/queries/orderitemsQueries";
+import GET_DININGTABLE from "../../app/queries/diningtableQueries";
 import { ADD_ORDER, UPDATE_ORDER, DELETE_ORDER } from "../../app/mutations/orderMutation";
 
 // Status filter tabs
@@ -42,10 +43,19 @@ export default function Orders() {
     status: 'Pending'
   });
   
+  // Table selection modal
+  const [showTableSelector, setShowTableSelector] = useState(false);
+  const [tableAction, setTableAction] = useState('add'); // 'add' or 'edit'
+  
   // Fetch orders data from GraphQL API with fetchPolicy to disable caching
   const { loading: ordersLoading, error: ordersError, data: ordersData, refetch: refetchOrders } = useQuery(GET_ORDERS, {
     fetchPolicy: 'network-only', // This ensures we always get fresh data from the server
     notifyOnNetworkStatusChange: true, // This ensures loading state updates when refetching
+  });
+  
+  // Fetch dining tables data
+  const { loading: tablesLoading, error: tablesError, data: tablesData } = useQuery(GET_DININGTABLE, {
+    fetchPolicy: 'network-only',
   });
   
   // Fetch menus data for price information
@@ -114,28 +124,9 @@ export default function Orders() {
           console.log("✅ Valid employee credentials found");
           setIsAdmin(false);
         }
-      } else {
-        // Set hardcoded admin for development/testing
-        console.warn("⚠️ Auth check failed - USING FALLBACK ID FOR TESTING");
-        
-        // DEVELOPMENT ONLY: Set fallback credentials
-        setIsAdmin(true);
-        setUserId(1); // Default user ID for testing
-        
-        // Alert developer about the issue
-        Alert.alert(
-          "Development Mode", 
-          "Using fallback credentials for testing. In production, proper authentication will be required.",
-          [{ text: "OK" }]
-        );
       }
     } catch (error) {
       console.error("Error checking user status:", error);
-      
-      // DEVELOPMENT ONLY: Set fallback credentials
-      console.warn("⚠️ Setting fallback credentials due to error");
-      setIsAdmin(true);
-      setUserId(1); // Default user ID for testing
     }
   };
   
@@ -204,24 +195,24 @@ export default function Orders() {
   };
 
   // Function to handle view order details
-const handleViewOrder = (order) => {
-  console.log("Navigating to order details:", order);
-    
+  const handleViewOrder = (order) => {
+    console.log("Navigating to order details:", order);
+      
     // Navigate to ordersandorderitem.jsx in the (screens) folder
     // Pass the order details as params
-router.push({
-    pathname: '/(screens)/ordersandorderitem',
-    params: {
-      orderId: order.id,
-      table: order.table,
-      time: order.time,
-      price: order.price,
-      status: order.status,
-      userRole: isAdmin ? 'admin' : 'employee', // Add user role
-      userId: userId // Add user ID
-    }
-  });
-};
+    router.push({
+      pathname: '/(screens)/ordersandorderitem',
+      params: {
+        orderId: order.id,
+        table: order.table,
+        time: order.time,
+        price: order.price,
+        status: order.status,
+        userRole: isAdmin ? 'admin' : 'employee', // Add user role
+        userId: userId // Add user ID
+      }
+    });
+  };
 
   // Retry loading orders
   const handleRetryLoad = () => {
@@ -240,6 +231,33 @@ router.push({
     setShowAddModal(true);
   };
   
+  // Open table selector with add context
+  const openTableSelectorForAdd = () => {
+    setTableAction('add');
+    setShowTableSelector(true);
+    setShowAddModal(false);
+  };
+  
+  // Open table selector with edit context
+  const openTableSelectorForEdit = () => {
+    setTableAction('edit');
+    setShowTableSelector(true);
+    setShowEditModal(false);
+  };
+  
+  // Handle table selection
+  const handleTableSelect = (tableId) => {
+    setFormData({...formData, tableId: tableId.toString()});
+    setShowTableSelector(false);
+    
+    // Return to the appropriate modal
+    if (tableAction === 'add') {
+      setShowAddModal(true);
+    } else if (tableAction === 'edit') {
+      setShowEditModal(true);
+    }
+  };
+  
   // Handle adding an order
   const handleAddOrder = async () => {
     // Validate form data
@@ -256,7 +274,7 @@ router.push({
             table_id: parseInt(formData.tableId, 10),
             status: formData.status
           },
-          userId: userId || 1 // Fallback for development
+          userId: userId
         }
       });
       
@@ -298,7 +316,7 @@ router.push({
             table_id: parseInt(formData.tableId, 10),
             status: formData.status
           },
-          userId: userId || 1 // Fallback for development
+          userId: userId
         }
       });
       
@@ -331,7 +349,7 @@ router.push({
       const response = await deleteOrder({
         variables: {
           orderId: parseInt(selectedOrder.id, 10),
-          userId: userId || 1 // Fallback for development
+          userId: userId
         }
       });
       
@@ -348,6 +366,17 @@ router.push({
       console.error("Error deleting order:", error);
       Alert.alert("Error", "An error occurred while deleting the order");
     }
+  };
+
+  // Get table name by ID
+  const getTableNameById = (tableId) => {
+    if (!tablesData || !tablesData.diningtables) return `Table ${tableId}`;
+    
+    const table = tablesData.diningtables.find(
+      table => table.table_id === parseInt(tableId, 10)
+    );
+    
+    return table ? table.table_name : `Table ${tableId}`;
   };
 
   // Helper function to determine status badge style
@@ -480,7 +509,7 @@ router.push({
                     <View style={orderStyles.orderTop}>
                       <Text style={orderStyles.orderId}>Order #{order.id}</Text>
                     </View>
-                    <Text style={orderStyles.orderInfo}>Table {order.table} • {order.time}</Text>
+                    <Text style={orderStyles.orderInfo}>{getTableNameById(order.table)} • {order.time}</Text>
                     <Text style={orderStyles.orderPrice}>{order.price}</Text>
                   </View>
                   <View style={orderStyles.orderActions}>
@@ -551,14 +580,16 @@ router.push({
             </View>
             
             <View style={orderStyles.formGroup}>
-              <Text style={orderStyles.formLabel}>Table Number:</Text>
-              <TextInput
-                style={orderStyles.formInput}
-                placeholder="Enter table number"
-                keyboardType="numeric"
-                value={formData.tableId}
-                onChangeText={(text) => setFormData({...formData, tableId: text})}
-              />
+              <Text style={orderStyles.formLabel}>Table:</Text>
+              <TouchableOpacity 
+                style={orderStyles.tableSelector}
+                onPress={openTableSelectorForAdd}
+              >
+                <Text style={orderStyles.tableSelectorText}>
+                  {formData.tableId ? getTableNameById(formData.tableId) : 'Select Table'}
+                </Text>
+                <FontAwesome5 name="chevron-down" size={16} color={globalStyles.colors.textDark} />
+              </TouchableOpacity>
             </View>
             
             <View style={orderStyles.formGroup}>
@@ -625,14 +656,16 @@ router.push({
             </View>
             
             <View style={orderStyles.formGroup}>
-              <Text style={orderStyles.formLabel}>Table Number:</Text>
-              <TextInput
-                style={orderStyles.formInput}
-                placeholder="Enter table number"
-                keyboardType="numeric"
-                value={formData.tableId}
-                onChangeText={(text) => setFormData({...formData, tableId: text})}
-              />
+              <Text style={orderStyles.formLabel}>Table:</Text>
+              <TouchableOpacity 
+                style={orderStyles.tableSelector}
+                onPress={openTableSelectorForEdit}
+              >
+                <Text style={orderStyles.tableSelectorText}>
+                  {formData.tableId ? getTableNameById(formData.tableId) : 'Select Table'}
+                </Text>
+                <FontAwesome5 name="chevron-down" size={16} color={globalStyles.colors.textDark} />
+              </TouchableOpacity>
             </View>
             
             <View style={orderStyles.formGroup}>
@@ -694,7 +727,7 @@ router.push({
             <Text style={orderStyles.modalTitle}>Delete Order</Text>
             
             <Text style={orderStyles.deleteConfirmationText}>
-              Are you sure you want to delete Order #{selectedOrder?.id} for Table {selectedOrder?.table}?
+              Are you sure you want to delete Order #{selectedOrder?.id} for {selectedOrder?.table ? getTableNameById(selectedOrder.table) : ''}?
             </Text>
             
             <Text style={orderStyles.deleteWarningText}>
@@ -724,6 +757,77 @@ router.push({
           </View>
         </View>
       </Modal>
+      
+      {/* Table Selector Modal */}
+      <Modal
+  animationType="slide"
+  transparent={true}
+  visible={showTableSelector}
+  onRequestClose={() => {
+    setShowTableSelector(false);
+    if (tableAction === 'add') {
+      setShowAddModal(true);
+    } else if (tableAction === 'edit') {
+      setShowEditModal(true);
+    }
+  }}
+>
+  <View style={orderStyles.modalContainer}>
+    <View style={orderStyles.modalContent}>
+      <Text style={orderStyles.modalTitle}>Select Table</Text>
+      
+      {tablesLoading ? (
+        <ActivityIndicator size="large" color={globalStyles.colors.primary} />
+      ) : tablesError ? (
+        <Text style={orderStyles.errorText}>Failed to load tables. Please try again.</Text>
+      ) : (
+        <ScrollView 
+          style={orderStyles.tableList}
+          contentContainerStyle={orderStyles.tableListContent}
+        >
+          {tablesData?.diningtables
+            .filter(table => table.is_available) // Only show available tables
+            .map(table => (
+              <TouchableOpacity
+                key={table.table_id}
+                style={[
+                  orderStyles.tableItem,
+                  formData.tableId === table.table_id.toString() && orderStyles.tableItemSelected
+                ]}
+                onPress={() => handleTableSelect(table.table_id)}
+              >
+                <Text style={[
+                  orderStyles.tableItemText,
+                  formData.tableId === table.table_id.toString() && orderStyles.tableItemTextSelected
+                ]}>
+                  {table.table_name}
+                </Text>
+                {formData.tableId === table.table_id.toString() && (
+                  <FontAwesome5 name="check" size={16} color={globalStyles.colors.white} />
+                )}
+              </TouchableOpacity>
+            ))}
+        </ScrollView>
+      )}
+      
+      <View style={orderStyles.modalButtonsContainer}>
+        <TouchableOpacity
+          style={[orderStyles.modalButton, orderStyles.modalCancelButton]}
+          onPress={() => {
+            setShowTableSelector(false);
+            if (tableAction === 'add') {
+              setShowAddModal(true);
+            } else if (tableAction === 'edit') {
+              setShowEditModal(true);
+            }
+          }}
+        >
+          <Text style={orderStyles.modalCancelButtonText}>Cancel</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
     </ScrollView>
   );
 }

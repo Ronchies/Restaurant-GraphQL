@@ -16,6 +16,17 @@ export default function AdminLayout() {
       />
 
       <Tabs.Screen
+        name="diningtable"
+        options={{
+          title: "Table",
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="table" size={24} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
         name="menu"
         options={{
           title: "Menu",
