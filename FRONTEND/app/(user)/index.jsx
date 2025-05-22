@@ -9,8 +9,16 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import globalStyles from "../../assets/styles/globalStyles"; // Update the path as needed
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
+import { useEffect, useRef } from "react";
+import { 
+  checkTokenExpiration, 
+  startTokenExpirationCheck, 
+  stopTokenExpirationCheck 
+} from "../helpers/tokenExpirationHelper"; // Update the path as needed
 
 export default function Tab() {
+  const tokenCheckInterval = useRef(null);
+
   // Mock data
   const orderData = [
     { id: "1", table: "3", time: "10:30:00 AM", status: "Served" },
@@ -18,10 +26,37 @@ export default function Tab() {
     { id: "1", table: "3", time: "10:30:00 AM", status: "Served" },
   ];
 
-  // Update your handleLogout function
+  // Check token expiration when component mounts
+  useEffect(() => {
+    const initializeTokenCheck = async () => {
+      // Check token on mount
+      const isValid = await checkTokenExpiration();
+      
+      if (isValid) {
+        // Start periodic checking if token is valid
+        tokenCheckInterval.current = startTokenExpirationCheck(30000); // Check every 30 seconds
+      }
+    };
+
+    initializeTokenCheck();
+
+    // Cleanup on unmount
+    return () => {
+      if (tokenCheckInterval.current) {
+        stopTokenExpirationCheck(tokenCheckInterval.current);
+      }
+    };
+  }, []);
+
+  // Manual logout function (for the logout button)
   const handleLogout = async () => {
     try {
-      console.log("Logging out...");
+      console.log("Manual logout...");
+
+      // Stop token checking
+      if (tokenCheckInterval.current) {
+        stopTokenExpirationCheck(tokenCheckInterval.current);
+      }
 
       // Remove tokens from SecureStore
       await SecureStore.deleteItemAsync("user_token");

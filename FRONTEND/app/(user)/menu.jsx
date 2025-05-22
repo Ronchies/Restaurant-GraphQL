@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import globalStyles from "../../assets/styles/globalStyles";
 import menuStyles from "../../assets/styles/menu";
 import * as SecureStore from "expo-secure-store";
@@ -18,8 +18,16 @@ import { router } from "expo-router";
 import { useQuery, useMutation } from "@apollo/client";
 import GET_MENUS from "../queries/menuQueries";
 import { ADD_MENU, UPDATE_MENU, DELETE_MENU } from "../mutations/menuMutation";
+import { 
+  checkTokenExpiration, 
+  startTokenExpirationCheck, 
+  stopTokenExpirationCheck 
+} from "../helpers/tokenExpirationHelper";
 
 export default function Menu() {
+  // Add token check interval ref
+  const tokenCheckInterval = useRef(null);
+
   // State for modals
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
@@ -38,9 +46,30 @@ export default function Menu() {
   const [adminId, setAdminId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   
-  // Check if user is admin on component mount
+  // Check if user is admin on component mount and initialize token checking
   useEffect(() => {
-    checkAdminStatus();
+    const initializeComponent = async () => {
+      // First check token expiration
+      const isValid = await checkTokenExpiration();
+      
+      if (isValid) {
+        // If token is valid, check admin status
+        await checkAdminStatus();
+        
+        // Start periodic token checking
+        tokenCheckInterval.current = startTokenExpirationCheck(30000); // Check every 30 seconds
+      }
+      // If token is invalid, checkTokenExpiration will handle the redirect
+    };
+
+    initializeComponent();
+
+    // Cleanup on unmount
+    return () => {
+      if (tokenCheckInterval.current) {
+        stopTokenExpirationCheck(tokenCheckInterval.current);
+      }
+    };
   }, []);
 
   // Function to check if the current user is an admin
@@ -56,12 +85,12 @@ export default function Menu() {
       console.log("- Token exists:", !!token);
       
       // Check if we have valid credentials
-      if (userType && userType.toLowerCase() === "admin" && userId) {
+      if (userType && userType.toLowerCase() === "admin" && userId && token) {
         console.log("✅ Valid admin credentials found");
         setIsAdmin(true);
         setAdminId(parseInt(userId));
       } else {
-        console.log("❌ Not authenticated as admin");
+        console.log("❌ Admin authentication failed - user is not an admin or missing credentials");
         setIsAdmin(false);
         setAdminId(null);
       }
@@ -180,10 +209,15 @@ export default function Menu() {
     setDeleteConfirmVisible(true);
   };
 
-  // Function to handle logout
+  // Manual logout function (for the logout button)
   const handleLogout = async () => {
     try {
-      console.log("Logging out...");
+      console.log("Manual logout...");
+
+      // Stop token checking
+      if (tokenCheckInterval.current) {
+        stopTokenExpirationCheck(tokenCheckInterval.current);
+      }
 
       // Remove tokens from SecureStore
       await SecureStore.deleteItemAsync("user_token");
@@ -208,7 +242,7 @@ export default function Menu() {
     
     if (!adminId) {
       console.error("Admin ID is missing:", adminId);
-      Alert.alert("Error", "Admin ID not available. Please log in as an admin.");
+      Alert.alert("Error", "Admin authentication required. Please log in as an admin.");
       return;
     }
 
@@ -259,7 +293,7 @@ export default function Menu() {
     
     if (!adminId) {
       console.error("Admin ID is missing:", adminId);
-      Alert.alert("Error", "Admin ID not available. Please log in as an admin.");
+      Alert.alert("Error", "Admin authentication required. Please log in as an admin.");
       return;
     }
     
@@ -305,7 +339,7 @@ export default function Menu() {
   const handleDelete = () => {
     if (!adminId) {
       console.error("Admin ID is missing:", adminId);
-      Alert.alert("Error", "Admin ID not available. Please log in as an admin.");
+      Alert.alert("Error", "Admin authentication required. Please log in as an admin.");
       return;
     }
     

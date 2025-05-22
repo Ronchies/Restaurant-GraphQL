@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,11 @@ import GET_MENUS from "../../app/queries/menuQueries";
 import GET_ORDERSITEMS from "../../app/queries/orderitemsQueries";
 import GET_DININGTABLE from "../../app/queries/diningtableQueries";
 import { ADD_ORDER, UPDATE_ORDER, DELETE_ORDER } from "../../app/mutations/orderMutation";
+import { 
+  checkTokenExpiration, 
+  startTokenExpirationCheck, 
+  stopTokenExpirationCheck 
+} from "../helpers/tokenExpirationHelper";
 
 // Status filter tabs
 const statusFilters = ['All', 'Pending', 'Preparing', 'Cancelled', 'Completed'];
@@ -29,6 +34,9 @@ export default function Orders() {
   const [activeFilter, setActiveFilter] = useState('All');
   const [isAdmin, setIsAdmin] = useState(false);
   const [userId, setUserId] = useState(null);
+  
+  // Token expiration checking
+  const tokenCheckInterval = useRef(null);
   
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
@@ -87,6 +95,28 @@ export default function Orders() {
     ],
     awaitRefetchQueries: true
   });
+  
+  // Check token expiration when component mounts
+  useEffect(() => {
+    const initializeTokenCheck = async () => {
+      // Check token on mount
+      const isValid = await checkTokenExpiration();
+      
+      if (isValid) {
+        // Start periodic checking if token is valid
+        tokenCheckInterval.current = startTokenExpirationCheck(30000); // Check every 30 seconds
+      }
+    };
+
+    initializeTokenCheck();
+
+    // Cleanup on unmount
+    return () => {
+      if (tokenCheckInterval.current) {
+        stopTokenExpirationCheck(tokenCheckInterval.current);
+      }
+    };
+  }, []);
   
   // Force refresh orders every time component mounts
   useEffect(() => {
@@ -175,10 +205,15 @@ export default function Orders() {
     ? processedOrders 
     : processedOrders.filter(order => order.status === activeFilter);
 
-  // Function to handle logout
+  // Function to handle logout (manual logout with token check cleanup)
   const handleLogout = async () => {
     try {
-      console.log("Logging out...");
+      console.log("Manual logout...");
+
+      // Stop token checking
+      if (tokenCheckInterval.current) {
+        stopTokenExpirationCheck(tokenCheckInterval.current);
+      }
 
       // Remove tokens from SecureStore
       await SecureStore.deleteItemAsync("user_token");

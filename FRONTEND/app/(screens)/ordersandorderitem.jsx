@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -19,6 +19,11 @@ import GET_ORDERSITEMS from "../../app/queries/orderitemsQueries";
 import GET_MENUS from "../../app/queries/menuQueries";
 import GET_DININGTABLE from "../../app/queries/diningtableQueries";
 import { DELETE_ORDERITEM, ADD_ORDERITEM, UPDATE_ORDERITEM } from "../../app/mutations/orderMutation";
+import { 
+  checkTokenExpiration, 
+  startTokenExpirationCheck, 
+  stopTokenExpirationCheck 
+} from "../helpers/tokenExpirationHelper";
 
 export default function OrderAndOrderItem() {
   // Get the parameters passed from the orders screen
@@ -26,6 +31,9 @@ export default function OrderAndOrderItem() {
   const { orderId, table, time, price, status, userRole, userId } = params;
   
   console.log("Order detail page params:", { orderId, table, time, price, status, userRole });
+  
+  // Token expiration checking
+  const tokenCheckInterval = useRef(null);
   
   // State for processed order items
   const [orderItems, setOrderItems] = useState([]);
@@ -42,6 +50,28 @@ export default function OrderAndOrderItem() {
   const [selectedOrderItem, setSelectedOrderItem] = useState(null);
   const [quantity, setQuantity] = useState('1');
   const [isPaid, setIsPaid] = useState(false);
+
+  // Check token expiration when component mounts
+  useEffect(() => {
+    const initializeTokenCheck = async () => {
+      // Check token on mount
+      const isValid = await checkTokenExpiration();
+      
+      if (isValid) {
+        // Start periodic checking if token is valid
+        tokenCheckInterval.current = startTokenExpirationCheck(30000); // Check every 30 seconds
+      }
+    };
+
+    initializeTokenCheck();
+
+    // Cleanup on unmount
+    return () => {
+      if (tokenCheckInterval.current) {
+        stopTokenExpirationCheck(tokenCheckInterval.current);
+      }
+    };
+  }, []);
 
   // Fetch order items data from GraphQL API
   const { 
@@ -199,11 +229,16 @@ export default function OrderAndOrderItem() {
       return;
     }
 
+    if (!userId) {
+      Alert.alert("Error", "User ID is required to add order items");
+      return;
+    }
+
     const orderIdNum = parseInt(orderId, 10);
     const menuIdNum = parseInt(selectedMenuItem.id, 10);
     const quantityNum = parseInt(quantity, 10);
     const amount = selectedMenuItem.price * quantityNum;
-    const userIdNum = parseInt(userId, 10) || 1; // Fallback to userId 1 if not provided
+    const userIdNum = parseInt(userId, 10);
 
     addOrderItem({
       variables: {
@@ -225,11 +260,16 @@ export default function OrderAndOrderItem() {
       return;
     }
 
+    if (!userId) {
+      Alert.alert("Error", "User ID is required to update order items");
+      return;
+    }
+
     const orderIdNum = parseInt(orderId, 10);
     const menuIdNum = parseInt(selectedOrderItem.menuId, 10);
     const quantityNum = parseInt(quantity, 10);
     const amount = selectedOrderItem.rawPrice * quantityNum;
-    const userIdNum = parseInt(userId, 10) || 1; // Fallback to userId 1 if not provided
+    const userIdNum = parseInt(userId, 10);
     const orderitemIdNum = parseInt(selectedOrderItem.id, 10);
 
     updateOrderItem({
@@ -254,8 +294,13 @@ export default function OrderAndOrderItem() {
       return;
     }
 
+    if (!userId) {
+      Alert.alert("Error", "User ID is required to delete order items");
+      return;
+    }
+
     const orderitemIdNum = parseInt(selectedOrderItem.id, 10);
-    const userIdNum = parseInt(userId, 10) || 1; // Fallback to userId 1 if not provided
+    const userIdNum = parseInt(userId, 10);
 
     deleteOrderItem({
       variables: {
@@ -322,9 +367,9 @@ export default function OrderAndOrderItem() {
   };
 
   // Check if user is authorized to edit/add items
-  const canEditItems = userRole === 'employee' || userRole === 'admin' || !userRole;
+  const canEditItems = userRole === 'employee' || userRole === 'admin';
   // Admin can only delete items, not edit or add
-  const canAddItems = (userRole === 'employee' || !userRole) && status !== 'Completed' && status !== 'Cancelled';
+  const canAddItems = userRole === 'employee' && status !== 'Completed' && status !== 'Cancelled';
   // Any role that can see this page can cancel the order
   const canCancelOrder = status !== 'Cancelled' && status !== 'Completed';
 
@@ -716,7 +761,7 @@ export default function OrderAndOrderItem() {
                     <Text style={ordersandorderitemStyles.deleteConfirmButtonText}>Delete</Text>
                   )}
                 </TouchableOpacity>
-              </View>
+                </View>
             </View>
           </View>
         </View>
