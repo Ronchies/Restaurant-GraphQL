@@ -10,7 +10,7 @@ import { onError } from "@apollo/client/link/error";
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
 
-const API_ENDPOINT = "http://192.168.68.112:4002/graphql";
+const API_ENDPOINT = "http://192.168.68.113:4002/graphql";
 
 // Function to handle automatic logout
 const handleAutoLogout = async () => {

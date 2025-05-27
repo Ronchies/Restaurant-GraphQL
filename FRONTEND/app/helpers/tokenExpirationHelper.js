@@ -1,6 +1,7 @@
 // helpers/tokenExpirationHelper.js
 import * as SecureStore from "expo-secure-store";
 import { router } from "expo-router";
+import { Alert } from "react-native";
 
 // Function to decode JWT token and check expiration
 const isTokenExpired = (token) => {
@@ -19,10 +20,30 @@ const isTokenExpired = (token) => {
   }
 };
 
+// Function to show session expired alert
+const showSessionExpiredAlert = () => {
+  return new Promise((resolve) => {
+    Alert.alert(
+      "Session Expired",
+      "Your session has expired. Please log in again.",
+      [
+        {
+          text: "OK",
+          onPress: () => resolve(),
+        },
+      ],
+      { cancelable: false }
+    );
+  });
+};
+
 // Function to handle automatic logout
 const handleAutoLogout = async () => {
   try {
     console.log("Token expired - Auto logging out...");
+
+    // Show session expired alert and wait for user to press OK
+    await showSessionExpiredAlert();
 
     // Remove tokens from SecureStore
     await SecureStore.deleteItemAsync("user_token");
